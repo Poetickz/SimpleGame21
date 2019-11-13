@@ -26,7 +26,7 @@ class Game
     def give_card(player_name)
         new_card = @deck_cards.pop
         @plays[player_name].push(new_card)
-        @players[player_name].send "#{new_card.print_card}", 0
+        telling(new_card.print_card, player_name)
         puts "#{player_name} se le asigno #{new_card.print_card}"
     end
 
@@ -36,7 +36,7 @@ class Game
 
     def count_total_player(player_name)
       total = 0
-      @plays[player_name].each { |card| total += card.value_card }
+      @plays[player_name].each { |card| total += card.value_number }
       return total
     end
 
@@ -53,6 +53,39 @@ class Game
       end
     end
 
+    def asking(message, player_name)
+      @players[player_name].send "#{message}", 0
+      msg =  @players[player_name].recv(1024)
+      return msg
+    end
+
+    def telling(message, player_name)
+      @players[player_name].send "#{message}", 0
+    end
+
+    def max_count(player_name)
+      total = 0
+      total_2 = 0
+      @plays[player_name].each do |card|
+        
+        if card.value_card != "A"
+          total += card.value_number
+          total_2 += card.value_number
+        else
+          total += card.value_number
+          total_2 += 11
+        end
+      end
+
+      if not (total>21 || total_2>21)
+        return [total, total_2].max
+      elsif total<=21
+        return total
+      else
+        return total_2
+      end
+    end
+
     def is_hold?(player_name)
       return true if @status_player[player_name] == "Hold"
       return false
@@ -65,10 +98,11 @@ class Game
     end
 
     def want_hold?(player_name)
-      connection = @players[player_name]
-      connection.send "¿Quieres hold o call?", 0
-      answer = connection.recv(1024)
-      return true if answer == "Hold"
+      answer = asking("¿Quieres hold o call?", player_name)
+      if answer == "hold"
+        @status_player[player_name]= "Hold"
+        return true
+      end
       return false
     end
 
@@ -92,10 +126,11 @@ class Game
       winner = []
       @players.each do |player_name, connection|
         if @status_player[player_name] != "Out"
-          player_total = count_total_player[player_name]
+          player_total = max_count(player_name)
           if player_total == winner_point
             winner.push(player_name)
           elsif player_total > winner_point
+            losers += winner
             winner = ["#{player_name}"]
           else 
             losers.push(player_name)
@@ -111,13 +146,13 @@ class Game
 
     def notificate_winners(winners)
       winners.each do |player|
-        @players[player].send "Ganaste, felicidades", 0
+        telling("Ganaste, felicidades", player)
       end
     end
 
     def notificate_losers(losers)
         losers.each do |player|
-          @players[player].send "Perdiste, mas suerte la proxima", 0
+          telling("Perdiste, mas suerte la proxima", player)
         end
     end
 
@@ -128,6 +163,12 @@ class Game
       end
 
       who_wins?
+      end_game
+
+    end
+
+    def end_game
+      @players.each { |player,connection| telling("kill", player) }
     end
 
 end
