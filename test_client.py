@@ -8,7 +8,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     while(True):
         response_data = s.recv(1024).decode("utf-8") 
-        if response_data == "kill":
+        if "kill" in response_data:
             break
 
         print (response_data)

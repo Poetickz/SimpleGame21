@@ -47,6 +47,7 @@ class Game
       end
 
       give_card(player)
+      sleep 1
 
       if count_total_player(player) > 21
         kill_player(player)
@@ -54,13 +55,13 @@ class Game
     end
 
     def asking(message, player_name)
-      @players[player_name].send "#{message}", 0
+      @players[player_name].send "\n#{message}", 0
       msg =  @players[player_name].recv(1024)
       return msg
     end
 
     def telling(message, player_name)
-      @players[player_name].send "#{message}", 0
+      @players[player_name].send "#{message}\n", 0
     end
 
     def max_count(player_name)
@@ -89,7 +90,7 @@ class Game
     def kill_player(player_name)
       @status_player[player_name] = "Out"
       puts "El jugador #{player_name} se paso más de 21"
-      @players[player_name].send "Te has pasado de 21", 0
+      @players[player_name].send "\nTe has pasado de 21", 0
     end
 
     def want_hold?(player_name)

@@ -14,7 +14,7 @@ class Server
        @waiting_players = []
        @waiting = false
        @threads = []
- 
+
        puts 'Started server.........'
        @threads << Thread.new { run }
        @threads << Thread.new { establish_game }
@@ -40,34 +40,34 @@ class Server
     end
 
     def waiting_start()
-      puts "inicio"
       @waiting = true
-      count_down = Thread.new do
-        @time = 5
-        5.times do |i|
-          sleep 1
-          @time -= 1
+      Thread.new do
+        @time = 30
+        count_down = Thread.new{
+          30.times do |i|
+            sleep 1
+            @time -= 1
 
-        end
-        
-      end
 
-      sending = Thread.new{
-        while(@time>0)
-          telling_players(@players, "Buscando a más jugadores, el juego empezara en #{@time} segundos.")
-          sleep 1
-          if @players.count == 4
-            Thread.kill(count_down)
-            break
+          end}
+
+        sending = Thread.new{
+          while(@time>0)
+            telling_players(@players, "\nSe ha encontrado #{@players.count}/4, el juego empezara en #{@time} segundos.")
+            sleep 1
+            if @players.count == 4
+              break
+            end
           end
-        end
-      }.join
-        Thread.kill(count_down)
-        Thread.kill(sending)
-        otros = @players
-        @players = Hash.new
-        @waiting = false
-        Thread.new{Game.new(otros)}
+        }.join
+
+          count_down.exit
+          sending.exit
+          otros = @players
+          @players = Hash.new
+          @waiting = false
+          Thread.new{Game.new(otros)}.join
+      end
     end
 
     def telling_players(players, message)
@@ -81,12 +81,14 @@ class Server
             @players = @waiting_players.pop.merge(@players)
           end
         end
-        waiting_start unless @waiting
-        while @players.count < 4 && @waiting
+        Thread.new {waiting_start} unless @waiting
+        while @players.count < 4 || @waiting
+          break unless @waiting
           if @waiting_players.size != 0
             @players = @waiting_players.pop.merge(@players)
           end
         end
+        sleep 1
       end
     end
  end
