@@ -161,7 +161,6 @@ class Game
           elsif ((is_blackjack?(player_name) || (player_total > winner_point && player_total <= 21)))
             winner_point = player_total
             losers += winner
-            winner= 
             winner = ["#{player_name}"]
           else 
             losers.push(player_name)
