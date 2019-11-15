@@ -71,7 +71,14 @@ class Server
     end
 
     def telling_players(players, message)
-      players.each {|nombre, conn| conn.send "#{message}\n", 0}
+        players.each do |nombre, conn| 
+        begin        
+          conn.send "#{message}\n", 0
+        rescue => exception
+          @players.delete(nombre)
+          puts "Se desconectó #{nombre}"
+        end
+      end
     end
  
     def establish_game()

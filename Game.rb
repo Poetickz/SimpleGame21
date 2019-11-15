@@ -19,7 +19,7 @@ class Game
 
     def give_initialize_cards
         @players.each do |player, connection|
-            2.times { give_card(player) }
+           2.times { give_card(player) }
         end
     end
 
@@ -55,13 +55,26 @@ class Game
     end
 
     def asking(message, player_name)
+      begin
       @players[player_name].send "\n#{message}", 0
+      rescue => exception
+        @players.delete(player_name)
+        @status_player[player_name] = "Out"
+        puts "Se desconectó #{player_name}"
+        return "hold"
+      end
       msg =  @players[player_name].recv(1024)
       return msg
     end
 
     def telling(message, player_name)
-      @players[player_name].send "#{message}\n", 0
+      begin
+        @players[player_name].send "#{message}\n", 0
+      rescue => exception
+        @players.delete(player_name)
+        @status_player[player_name] = "Out"
+        puts "Se desconectó #{player_name}"
+      end
     end
 
     def max_count(player_name)
@@ -90,7 +103,7 @@ class Game
     def kill_player(player_name)
       @status_player[player_name] = "Out"
       puts "El jugador #{player_name} se paso más de 21"
-      @players[player_name].send "\nTe has pasado de 21", 0
+      telling("Te has pasado de 21", player_name)
     end
 
     def want_hold?(player_name)
@@ -109,6 +122,21 @@ class Game
         end
       end
     end
+    
+    def is_blackjack?(player_name)
+      if @plays[player_name].size == 2
+        has_As = false
+        @plays[player_name].each { |card| has_As = true if (card.value_card == "A")}
+        return false if ! has_As
+        has_K = false
+        @plays[player_name].each { |card| has_k = true if (card.value_card == "Q" || card.value_card == "K"  || card.value_card == "J" )}
+        return false if has_K
+        puts "BlackJack!"
+        return true
+      end
+
+      
+    end
 
     def all_finished?
       answer = true
@@ -122,11 +150,14 @@ class Game
       winner = []
       @players.each do |player_name, connection|
         if @status_player[player_name] != "Out"
+          jugadas = ""
+          @plays[player_name].each { |card| jugadas += "#{card.print_card} " }
           player_total = max_count(player_name)
-          if player_total == winner_point
+          puts "#{player_name} tiene: #{jugadas} total: #{player_total}"
+          if is_blackjack?(player_name) || (player_total == winner_point && player_total <= 21)
             winner_point = player_total
             winner.push(player_name)
-          elsif player_total > winner_point
+          elsif ((is_blackjack?(player_name) || (player_total > winner_point && player_total <= 21)))
             winner_point = player_total
             losers += winner
             winner= 
