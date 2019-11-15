@@ -94,7 +94,7 @@ class Game
     def kill_player(player_name)
       @status_player[player_name] = "Out"
       puts "El jugador #{player_name} se paso más de 21"
-      @player[player_name].send "Te has pasado de 21", 0
+      @players[player_name].send "Te has pasado de 21", 0
     end
 
     def want_hold?(player_name)
