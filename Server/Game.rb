@@ -19,7 +19,7 @@ class Game
 
     def give_initialize_cards
         @players.each do |player, connection|
-           2.times { give_card(player) }
+          2.times { give_card(player) }
         end
     end
 
@@ -128,11 +128,12 @@ class Game
         has_As = false
         @plays[player_name].each { |card| has_As = true if (card.value_card == "A")}
         return false if ! has_As
-        has_K = false
-        @plays[player_name].each { |card| has_k = true if (card.value_card == "Q" || card.value_card == "K"  || card.value_card == "J" )}
-        return false if has_K
-        puts "BlackJack!"
-        return true
+        @plays[player_name].each do |card|
+          if (card.value_card == "Q" || card.value_card == "K"  || card.value_card == "J" )
+            puts "BlackJack!"
+            return true
+          end
+        end
       end
 
       
