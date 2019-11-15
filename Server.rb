@@ -101,4 +101,4 @@ class Server
  end
  
  
- Server.new( "localhost", 8080 )
+ Server.new( "#{URI.parse("https://limitless-beyond-42308.herokuapp.com/").host}", 8080 )
