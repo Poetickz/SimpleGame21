@@ -47,7 +47,7 @@ class Game
       end
 
       give_card(player)
-      
+
       if count_total_player(player) > 21
         kill_player(player)
       end
@@ -77,13 +77,8 @@ class Game
         end
       end
 
-      if not (total>21 || total_2>21)
-        return [total, total_2].max
-      elsif total<=21
-        return total
-      else
-        return total_2
-      end
+      return total if total > total_2
+      return total_2
     end
 
     def is_hold?(player_name)
@@ -128,9 +123,12 @@ class Game
         if @status_player[player_name] != "Out"
           player_total = max_count(player_name)
           if player_total == winner_point
+            winner_point = player_total
             winner.push(player_name)
           elsif player_total > winner_point
+            winner_point = player_total
             losers += winner
+            winner= 
             winner = ["#{player_name}"]
           else 
             losers.push(player_name)
