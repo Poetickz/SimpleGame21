@@ -2,7 +2,7 @@ require_relative 'Game'
 require 'socket'
 class Server
     def initialize(socket_address, socket_port)
-       @server_socket = TCPServer.new(socket_address,socket_port)
+       @server_socket = TCPServer.new(socket_port)
  
        @connections_details = Hash.new
        @connected_players = Hash.new
@@ -101,4 +101,4 @@ class Server
  end
  
  
- Server.new( "#{URI.parse("https://limitless-beyond-42308.herokuapp.com/").host}", 8080 )
+ Server.new( 8080 )
