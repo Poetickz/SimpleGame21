@@ -134,6 +134,7 @@ class Game
             return true
           end
         end
+        return false
       end
 
       
@@ -155,15 +156,21 @@ class Game
           @plays[player_name].each { |card| jugadas += "#{card.print_card} " }
           player_total = max_count(player_name)
           puts "#{player_name} tiene: #{jugadas} total: #{player_total}"
-          if is_blackjack?(player_name) || (player_total == winner_point && player_total <= 21)
+          if (is_blackjack?(player_name) || (player_total == winner_point && player_total <= 21))
+            puts "#{winner_point}, #{player_total},igual"
             winner_point = player_total
             winner.push(player_name)
+            puts "#{winner_point}, #{player_total},igual"
           elsif ((is_blackjack?(player_name) || (player_total > winner_point && player_total <= 21)))
+            puts "#{winner_point}, #{player_total},supero"
             winner_point = player_total
             losers += winner
             winner = ["#{player_name}"]
-          else 
+            puts "#{winner_point}, #{player_total},supero"
+          else
+            puts "#{winner_point}, #{player_total},perdio"
             losers.push(player_name)
+            puts "#{winner_point}, #{player_total},perdio"
           end
         end
       end
