@@ -91,7 +91,7 @@ class Game
         end
       end
 
-      return total if total > total_2
+      return total if total_2 > total && total <= 21
       return total_2
     end
 
@@ -157,20 +157,14 @@ class Game
           player_total = max_count(player_name)
           puts "#{player_name} tiene: #{jugadas} total: #{player_total}"
           if (is_blackjack?(player_name) || (player_total == winner_point && player_total <= 21))
-            puts "#{winner_point}, #{player_total},igual"
             winner_point = player_total
             winner.push(player_name)
-            puts "#{winner_point}, #{player_total},igual"
           elsif ((is_blackjack?(player_name) || (player_total > winner_point && player_total <= 21)))
-            puts "#{winner_point}, #{player_total},supero"
             winner_point = player_total
             losers += winner
             winner = ["#{player_name}"]
-            puts "#{winner_point}, #{player_total},supero"
           else
-            puts "#{winner_point}, #{player_total},perdio"
             losers.push(player_name)
-            puts "#{winner_point}, #{player_total},perdio"
           end
         end
       end
