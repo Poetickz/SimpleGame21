@@ -70,6 +70,7 @@ class Game
     def telling(message, player_name)
       begin
         @players[player_name].send "#{message}\n", 0
+        sleep 1
       rescue => exception
         @players.delete(player_name)
         @status_player[player_name] = "Out"
@@ -155,12 +156,15 @@ class Game
           jugadas = ""
           @plays[player_name].each { |card| jugadas += "#{card.print_card} " }
           player_total = max_count(player_name)
+          black_jack = is_blackjack?(player_name)
           puts "#{player_name} tiene: #{jugadas} total: #{player_total}"
-          if (is_blackjack?(player_name) || (player_total == winner_point && player_total <= 21))
-            winner_point = player_total
+          if (black_jack || (player_total == winner_point && player_total <= 21))
             winner.push(player_name)
-          elsif ((is_blackjack?(player_name) || (player_total > winner_point && player_total <= 21)))
+          elsif ((black_jack || (player_total > winner_point && player_total <= 21)))
             winner_point = player_total
+            if black_jack
+              winner_point = 22
+            end
             losers += winner
             winner = ["#{player_name}"]
           else
@@ -168,6 +172,7 @@ class Game
           end
         end
       end
+
 
       puts "Gano el jugador:"
       winner.each { |player|  puts "#{player}"}
