@@ -79,21 +79,20 @@ class Game
     end
 
     def max_count(player_name)
-      total = 0
-      total_2 = 0
+      total = [0]
       @plays[player_name].each do |card|
         
         if card.value_card != "A"
-          total += card.value_number
-          total_2 += card.value_number
+          total = total.map { |e| e += card.value_number }
         else
-          total += card.value_number
-          total_2 += 11
+          aux_total =  total.dup
+          aux_total = total.map { |e| e += 11 }
+          total = total.map { |e| e += card.value_number }
+          total += aux_total
         end
       end
-
-      return total if total_2 > total && total <= 21
-      return total_2
+      total = total.delete_if {|e| e > 21}
+      return total.max
     end
 
     def is_hold?(player_name)
@@ -131,7 +130,6 @@ class Game
         return false if ! has_As
         @plays[player_name].each do |card|
           if (card.value_card == "Q" || card.value_card == "K"  || card.value_card == "J" )
-            puts "BlackJack!"
             return true
           end
         end
@@ -151,6 +149,7 @@ class Game
       winner_point = 0
       losers = []
       winner = []
+      already_bj = false
       @players.each do |player_name, connection|
         if @status_player[player_name] != "Out"
           jugadas = ""
@@ -158,21 +157,24 @@ class Game
           player_total = max_count(player_name)
           black_jack = is_blackjack?(player_name)
           puts "#{player_name} tiene: #{jugadas} total: #{player_total}"
-          if (black_jack || (player_total == winner_point && player_total <= 21))
+          already_bj = true if black_jack
+
+          if already_bj
+            puts "BlackJack!"
             winner.push(player_name)
-          elsif ((black_jack || (player_total > winner_point && player_total <= 21)))
-            winner_point = player_total
-            if black_jack
-              winner_point = 22
-            end
-            losers += winner
-            winner = ["#{player_name}"]
+            winner = winner.delete_if {|winner| not is_blackjack?(winner) }
           else
-            losers.push(player_name)
+            if ((player_total == winner_point && player_total <= 21))
+              winner.push(player_name)
+            elsif (player_total > winner_point && player_total <= 21)
+              winner_point = player_total
+              winner = ["#{player_name}"]  
+            else
+            end
           end
+
         end
       end
-
 
       puts "Gano el jugador:"
       winner.each { |player|  puts "#{player}"}
