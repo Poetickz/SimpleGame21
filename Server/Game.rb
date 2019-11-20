@@ -160,7 +160,6 @@ class Game
           already_bj = true if black_jack
 
           if already_bj
-            puts "BlackJack!"
             winner.push(player_name)
             winner = winner.delete_if {|winner| not is_blackjack?(winner) }
           else
@@ -178,6 +177,7 @@ class Game
 
       puts "Gano el jugador:"
       winner.each { |player|  puts "#{player}"}
+      @players.each { |player_name, connection| losers.push(player_name) unless winner.include?(player_name)} 
       notificate_winners(winner)
       notificate_losers(losers)
     end
