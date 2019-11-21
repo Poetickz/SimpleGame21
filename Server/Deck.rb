@@ -20,7 +20,7 @@ class Deck
 
     def build_set(symbol)
         cards = []
-        value_cards = ["A","2","3","4","5","6","7","8","9","J","Q","K"]
+        value_cards = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"]
         value_cards.each { |value| cards.push(Card.new(symbol,value)) }
         return cards
     end
