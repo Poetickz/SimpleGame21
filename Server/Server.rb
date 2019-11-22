@@ -16,13 +16,13 @@ class Server
        @threads = []
 
        puts 'Started server.........'
-       @threads << Thread.new { run }
+       @threads << Thread.new { looking_for_players }
        @threads << Thread.new { establish_game }
 
        @threads.map(&:join)
-     end
+    end
  
-   def run
+    def looking_for_players
  
      loop{
        client_connection = @server_socket.accept
