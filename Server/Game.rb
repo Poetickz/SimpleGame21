@@ -102,7 +102,7 @@ class Game
     #Relatable comunication
     def telling(message, player_name)
       begin
-        @players[player_name].send "#{message}\n", 0
+        @players[player_name].send "#{message}", 0
         sleep 1
       rescue => exception
         @players.delete(player_name)
@@ -114,6 +114,7 @@ class Game
     def asking(message, player_name)
       begin
       @players[player_name].send "\n#{message}", 0
+      sleep 1
       rescue => exception
         @players.delete(player_name)
         @status_player[player_name] = "Out"
